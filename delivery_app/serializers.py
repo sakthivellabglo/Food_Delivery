@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from delivery_boy.models import FoodItem, Menu, Order, Restaurant
+from delivery_app.models import FoodItem, Menu, Order, Restaurant
 
 class CreateuserSerializers(serializers.ModelSerializer):
      class Meta:

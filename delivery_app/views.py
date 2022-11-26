@@ -10,8 +10,8 @@ from django.contrib.auth import authenticate, login
 from django.db.models import Sum
 
 
-from delivery_boy.models import FoodItem, Menu, Order, Restaurant
-from delivery_boy.serializers import CreateuserSerializers, Foodserializer, Loginserializer, Menuserializer, Orderserializer, Resserializer
+from delivery_app.models import FoodItem, Menu, Order, Restaurant
+from delivery_app.serializers import CreateuserSerializers, Foodserializer, Loginserializer, Menuserializer, Orderserializer, Resserializer
 
 class Register(viewsets.ModelViewSet):
 

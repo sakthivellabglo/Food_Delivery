@@ -1,6 +1,6 @@
 from rest_framework .routers import DefaultRouter
 from django.urls import path,include
-from delivery_boy.views import FoodList, LoginView, MenuList, OrderList, Register, ResList
+from delivery_app.views import FoodList, LoginView, MenuList, OrderList, Register, ResList
 
 
 router = DefaultRouter()
