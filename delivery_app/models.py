@@ -1,49 +1,58 @@
 from django.db import models
-
 from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 
+GENDER_CHOICES = (
+        ("M", "Male"),
+        ("F", "Female"),
+    )
 
-class FoodItem(models.Model):
-    name = models.CharField(max_length=30)
-    food_details = models.CharField(max_length=100)
-    price = models.IntegerField()
-    image =models.ImageField(upload_to='images')
-    is_veg =models.BooleanField()
-    is_available =models.BooleanField(default=False)
-
-class Restaurant(models.Model):
-    name = models.CharField(max_length=40)
-    image =models.ImageField(upload_to='images')
-    address = models.CharField(max_length=100)
-    phone_number =models.IntegerField()
-    foods = models.ManyToManyField(FoodItem)
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    birth_date = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    phone_number = models.CharField( max_length=10, blank=True)
+    city = models.CharField(max_length=255)
+    is_manager = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.user.first_name + " " + self.user.last_name
 
-class Menu(models.Model):
-    restaurant = models.OneToOneField(Restaurant,
-        on_delete=models.CASCADE,
-        primary_key=True,
+
+class Restaurant(models.Model):
+    manager = models.OneToOneField(User, on_delete=models.RESTRICT)
+    name = models.CharField(max_length=255, blank=False, null=False)
+    food_type = models.CharField(max_length=255, blank=False, null=False)
+    city = models.CharField(max_length=255, blank=False, null=False)
+    address = models.CharField(max_length=1024, blank=False, null=False)
+    open_time = models.TimeField(blank=False, null=False)
+    close_time = models.TimeField(blank=False, null=False)
+
+    def __str__(self):
+        return "<{}: {}>".format(self.pk, self.name)
+
+
+class Food(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.RESTRICT)
+    name = models.CharField(max_length=255, blank=False, null=False)
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=False, null=False
     )
-    food = models.ManyToManyField(FoodItem)
+    is_organic = models.BooleanField(default=False, blank=False, null=False)
+    is_vegan = models.BooleanField(default=False, blank=False, null=False)
+
+    def __str__(self):
+        return  self.name
+
 
 class Order(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    order_item =  models.ForeignKey(Menu,on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    price = models.IntegerField()
-    delivery_address = models.CharField(max_length=100)
-    pincode = models.IntegerField()
-    order_time = models.DateTimeField(auto_now_add=True)
-
-class Deliveryed(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    order = models.ForeignKey(Order,on_delete=models.CASCADE)
-    is_delivered =models.BooleanField(default=False)
-    delivery_time = models.DateTimeField(auto_now_add=True)
-
-
-
-# Create your models here.
+    customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    foods = models.ManyToManyField(Food)
+    is_accepted = models.BooleanField(default=False, blank=False, null=False)
+    is_cancelled = models.BooleanField(default=False, blank=False, null=False)
+    is_delivered = models.BooleanField(default=False, blank=False, null=False)
+    create_datetime = models.DateTimeField(auto_now_add=True, editable=False, blank=True)
+    accept_datetime = models.DateTimeField(default=None, null=True, blank=True)
+    cancell_datetime = models.DateTimeField(default=None, null=True, blank=True)
+    delivered_datetime = models.DateTimeField(default=None, null=True, blank=True)
+    note = models.CharField(max_length=1024, default="")
+    
