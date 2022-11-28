@@ -43,7 +43,7 @@ class IsFoodOwner(permissions.BasePermission):
     message = "You are not the owner of this food restaurant"
 
     def has_permission(self, request, view):
-        food = Food.objects.get(id=view.kwargs.get("id", None))
+        food = Food.objects.get(id=view.kwargs.get("pk", None))
         if food is None:
             return False
         return (
@@ -62,7 +62,7 @@ class CustomerCancellOrderPermission(permissions.BasePermission):
     )
 
     def has_permission(self, request, view):
-        order = Order.objects.get(id=view.kwargs.get("id", None))
+        order = Order.objects.get(id=view.kwargs.get("pk", None))
         if order is None:
             return False
         return not order.is_accepted and not order.is_cancelled
@@ -88,7 +88,7 @@ class CustomerApproveDeliveredOrderPermission(permissions.BasePermission):
     message = "You can not approve this order as delivered."
 
     def has_permission(self, request, view):
-        order = Order.objects.get(id=view.kwargs.get("id", None))
+        order = Order.objects.get(id=view.kwargs.get("pk", None))
         if order is None:
             return False
         return order.is_accepted and not order.is_cancelled and not order.is_delivered
@@ -102,7 +102,7 @@ class IsManagerOfOrder(permissions.BasePermission):
     message = "You are not the manager of this order."
 
     def has_permission(self, request, view):
-        order = Order.objects.get(id=view.kwargs.get("id", None))
+        order = Order.objects.get(id=view.kwargs.get("pk", None))
         if order is None:
             return False
         food = order.foods.first()
@@ -119,7 +119,7 @@ class ManagerCancellAcceptOrderPermission(permissions.BasePermission):
     message = "You don't have permission to cancell this order."
 
     def has_permission(self, request, view):
-        order = Order.objects.get(id=view.kwargs.get("id", None))
+        order = Order.objects.get(id=view.kwargs.get("pk", None))
         if order is None:
             return False
         return not order.is_cancelled and not order.is_accepted

@@ -4,10 +4,9 @@ from django.utils import timezone
 from django.db.models import Sum
 
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 
@@ -81,41 +80,41 @@ class UserProfile(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
    
-class RestaurantList(generics.ListAPIView):
+class RestaurantList(viewsets.ReadOnlyModelViewSet):
     """
     List of all restaurants.
     """
-
     serializer_class = RestaurantSerializer
     queryset = Restaurant.objects.all()
 
 
-class CreateRestaurant(generics.CreateAPIView):
+class CreateRestaurant(viewsets.ModelViewSet):
     """
     Create a restaurant by manager.
     """
-
+    queryset = Restaurant.objects.all()
     serializer_class = CreateRestaurantSerializer
     permission_classes = (
         IsAuthenticated,
         ManagerPermission,
     )
-
+    http_method_names = [ 'post']
     def perform_create(self, serializer):
         serializer.save(manager=self.request.user)
 
 
-class ManagerFoodListCreate(generics.ListCreateAPIView):
+class ManagerFoodListCreate(viewsets.ModelViewSet):
     """
     Create food for restaurant by manager.
     """
-
+    queryset = Food.objects.all()
     serializer_class = FoodSerializer
     permission_classes = (
         IsAuthenticated,
         ManagerPermission,
         HasRestaurant,
     )
+    http_method_names = ['get', 'post']
 
     def get_queryset(self):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
@@ -126,7 +125,7 @@ class ManagerFoodListCreate(generics.ListCreateAPIView):
         serializer.save(restaurant=restaurant)
 
 
-class UpdateFood(generics.UpdateAPIView):
+class UpdateFood(viewsets.ModelViewSet):
     """
     Update food information and price.
     """
@@ -139,16 +138,17 @@ class UpdateFood(generics.UpdateAPIView):
         IsFoodOwner,
     )
     queryset = Food.objects.all()
+    http_method_names = ["patch"]
 
-
-class CreateOrder(generics.CreateAPIView):
+class CreateOrder(viewsets.ModelViewSet):
     """
     Place an Order.
     """
 
     serializer_class = PlaceOrderSerializer
     permission_classes = (IsAuthenticated,)
-   
+    queryset = Order.objects.all()
+    http_method_names = ["post"]
     def perform_create(self, serializer):
         ids =dict(self.request.data)
         food_price = Food.objects.filter(id__in=ids["foods"]).aggregate(Sum("price"))['price__sum']
