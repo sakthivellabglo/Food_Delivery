@@ -100,6 +100,7 @@ class PlaceOrderSerializer(serializers.ModelSerializer):
             "cancell_datetime": {"read_only": True},
             "delivered_datetime": {"read_only": True},
             "time_to_deliver": {"read_only": True},
+            "total_price":{"read_only":True}
         }
 
     def validate(self, data):

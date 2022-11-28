@@ -49,6 +49,7 @@ class Food(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     foods = models.ManyToManyField(Food)
+    total_price =models.PositiveIntegerField()
     is_accepted = models.BooleanField(default=False, blank=False, null=False)
     is_cancelled = models.BooleanField(default=False, blank=False, null=False)
     is_delivered = models.BooleanField(default=False, blank=False, null=False)

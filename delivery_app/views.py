@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import viewsets
+from rest_framework.authtoken.models import Token
+
 
 from .models import Restaurant, Food, Order
 from .serializers import (
@@ -48,7 +50,8 @@ class api_login(generics.CreateAPIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return Response(status=status.HTTP_200_OK)
+            token, li = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key},status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -147,7 +150,9 @@ class CreateOrder(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
    
     def perform_create(self, serializer):
-        serializer.save(customer=self.request.user)
+        ids =dict(self.request.data)
+        food_price = Food.objects.filter(id__in=ids["foods"]).aggregate(Sum("price"))['price__sum']
+        serializer.save(customer=self.request.user,total_price = food_price)
 
 
 
