@@ -145,10 +145,9 @@ class CreateOrder(generics.CreateAPIView):
 
     serializer_class = PlaceOrderSerializer
     permission_classes = (IsAuthenticated,)
-
+   
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
-
 
 
 

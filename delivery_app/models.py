@@ -8,6 +8,7 @@ GENDER_CHOICES = (
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image =models.ImageField(upload_to="images")
     birth_date = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     phone_number = models.CharField( max_length=10, blank=True)
@@ -20,6 +21,7 @@ class Profile(models.Model):
 
 class Restaurant(models.Model):
     manager = models.OneToOneField(User, on_delete=models.RESTRICT)
+    image =models.ImageField(upload_to="images")
     name = models.CharField(max_length=255, blank=False, null=False)
     food_type = models.CharField(max_length=255, blank=False, null=False)
     city = models.CharField(max_length=255, blank=False, null=False)
@@ -34,12 +36,12 @@ class Restaurant(models.Model):
 class Food(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.RESTRICT)
     name = models.CharField(max_length=255, blank=False, null=False)
+    image =models.ImageField(upload_to="images")
     price = models.DecimalField(
         max_digits=10, decimal_places=2, blank=False, null=False
     )
     is_organic = models.BooleanField(default=False, blank=False, null=False)
     is_vegan = models.BooleanField(default=False, blank=False, null=False)
-
     def __str__(self):
         return  self.name
 

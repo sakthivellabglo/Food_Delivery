@@ -9,34 +9,13 @@ class LoginSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             "username",
-            "password",
-        )
-        extra_kwargs = {
-            "username": {
-                "allow_null": False,
-                "required": True,
-                "allow_blank": False,
-                "write_only": True,
-            },
-            "password": {
-                "allow_null": False,
-                "required": True,
-                "allow_blank": False,
-                "write_only": True,
-            },
-        }
-
-    def create(self, validated_data):
-        pass
-
-    def update(self, instance, validated_data):
-        pass
+            "password",)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ("birth_date", "gender", "phone_number", "city", "is_manager")
+        fields = ("birth_date","image", "gender", "phone_number", "city", "is_manager")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -52,18 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "profile",
         )
-        extra_kwargs = {
-            "first_name": {"allow_null": False, "required": True, "allow_blank": False},
-            "last_name": {"allow_null": False, "required": True, "allow_blank": False},
-            "profile": {"allow_null": False, "required": True, "allow_blank": False},
-            "password": {
-                "allow_null": False,
-                "required": True,
-                "allow_blank": False,
-                "write_only": True,
-            },
-            "id": {"read_only": True},
-        }
+        extra_kwargs = {"id": {"read_only": True},}
 
     def create(self, validated_data):
         profile_data = validated_data.pop("profile")
@@ -80,12 +48,11 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         profile_data = validated_data.pop("profile")
         profile = instance.profile
-
         instance.username = validated_data.get("username", instance.username)
         instance.first_name = validated_data.get("first_name", instance.first_name)
         instance.last_name = validated_data.get("last_name", instance.last_name)
         instance.set_password(validated_data.get("password"))
-
+        instance.set_password(validated_data.get("image"))
         profile.birth_date = profile_data.get("birth_date", profile.birth_date)
         profile.gender = profile_data.get("gender", profile.gender)
         profile.phone_number = profile_data.get("phone_number", profile.phone_number)
