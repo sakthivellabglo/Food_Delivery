@@ -87,6 +87,12 @@ class RestaurantList(viewsets.ReadOnlyModelViewSet):
     serializer_class = RestaurantSerializer
     queryset = Restaurant.objects.all()
 
+class FoodList(viewsets.ReadOnlyModelViewSet):
+    """
+    List of all restaurants.
+    """
+    serializer_class = FoodSerializer
+    queryset = Food.objects.all()
 
 class CreateRestaurant(viewsets.ModelViewSet):
     """
@@ -103,9 +109,9 @@ class CreateRestaurant(viewsets.ModelViewSet):
         serializer.save(manager=self.request.user)
 
 
-class ManagerFoodListCreate(viewsets.ModelViewSet):
+class ManagerFoodCreate(viewsets.ModelViewSet):
     """
-    Create food for restaurant by manager.
+    Create food for restaurant by manager and update the old foods
     """
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
@@ -114,7 +120,7 @@ class ManagerFoodListCreate(viewsets.ModelViewSet):
         ManagerPermission,
         HasRestaurant,
     )
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post','put']
 
     def get_queryset(self):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
@@ -125,20 +131,7 @@ class ManagerFoodListCreate(viewsets.ModelViewSet):
         serializer.save(restaurant=restaurant)
 
 
-class UpdateFood(viewsets.ModelViewSet):
-    """
-    Update food information and price.
-    """
 
-    serializer_class = FoodSerializer
-    permission_classes = (
-        IsAuthenticated,
-        ManagerPermission,
-        HasRestaurant,
-        IsFoodOwner,
-    )
-    queryset = Food.objects.all()
-    http_method_names = ["patch"]
 
 class CreateOrder(viewsets.ModelViewSet):
     """
@@ -323,3 +316,5 @@ class ManagerAcceptOrder(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         serializer.save(accept_datetime=timezone.now())
+
+
