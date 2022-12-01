@@ -7,12 +7,13 @@ from rest_framework .routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('users', views.UserList,)
+router.register('cart', views.CreateCart,)
 router.register('profile', views.UserProfile,basename='user-detail')
 router.register('restaurant', views.RestaurantList,basename="Restaurant")
 router.register('food', views.FoodList,basename="foods-list")
 router.register('manager/newrestaurant', views.CreateRestaurant,)
 router.register('manager/foods', views.ManagerFoodCreate,basename="food-list",)
-router.register('customer/neworder/', views.CreateOrder,)
+router.register('customer/neworder', views.CreateOrder,)
 urlpatterns = [
 
     # rest_framework Authentication
@@ -39,4 +40,6 @@ urlpatterns = [
     path("customer/deliveredorders/",views.CustomerDeliveredOrderList.as_view(),),
     path("customer/cancell/<int:pk>/", views.CustomerCancellOrder.as_view()),
     path("customer/approvedelivered/<int:pk>/",views.CustomerAprroveDeliveredOrder.as_view(),),
+    path('payment/', views.payment, name='payment'),
+    path('response/', views.response, name='response'),
 ]

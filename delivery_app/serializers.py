@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Profile, Restaurant, Food, Order
+from .models import Cart, Profile, Restaurant, Food, Order
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -85,6 +85,12 @@ class FoodSerializer(serializers.ModelSerializer):
         fields = "__all__"
         extra_kwargs = {"restaurant": {"read_only": True}}
 
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = "__all__"
+        extra_kwargs = {"customer": {"read_only": True}}
+
 
 class PlaceOrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -107,10 +113,12 @@ class PlaceOrderSerializer(serializers.ModelSerializer):
         """
         Check all ordered foods to be from one restaurants.
         """
-        food_list = data["foods"]
-        restaurant_id = food_list[0].restaurant.id
+        food_list = data["cart"]
+        print(food_list[0].food)
+        restaurant_id = food_list[0].food.restaurant.id
+        print(restaurant_id)
         for food in food_list:
-            if food.restaurant.id != restaurant_id:
+            if food.food.restaurant.id != restaurant_id:
                 raise serializers.ValidationError(
                     "All ordered foods should be from one restaurant."
                 )

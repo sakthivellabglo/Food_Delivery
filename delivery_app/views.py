@@ -1,7 +1,8 @@
+from ast import FloorDiv
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.utils import timezone
-from django.db.models import Sum
+from django.db.models import Sum ,F
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -11,8 +12,9 @@ from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 
 
-from .models import Restaurant, Food, Order
+from .models import Cart, Restaurant, Food, Order
 from .serializers import (
+    CartSerializer,
     UserSerializer,
     LoginSerializer,
     RestaurantSerializer,
@@ -130,7 +132,19 @@ class ManagerFoodCreate(viewsets.ModelViewSet):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
         serializer.save(restaurant=restaurant)
 
+class CreateCart(viewsets.ModelViewSet):
+    """
+    Add to Cart.
+    """
 
+    serializer_class = CartSerializer
+    permission_classes = (IsAuthenticated,)
+    queryset = Cart.objects.all()
+    http_method_names = ["post"]
+    def perform_create(self, serializer):
+        food_price = Food.objects.filter(id=self.request.data["food"]).aggregate(
+            total=Sum(F('price')))['total']*int(self.request.data["quantity"])
+        serializer.save(customer=self.request.user,price = food_price)
 
 
 class CreateOrder(viewsets.ModelViewSet):
@@ -144,7 +158,7 @@ class CreateOrder(viewsets.ModelViewSet):
     http_method_names = ["post"]
     def perform_create(self, serializer):
         ids =dict(self.request.data)
-        food_price = Food.objects.filter(id__in=ids["foods"]).aggregate(Sum("price"))['price__sum']
+        food_price = Cart.objects.filter(id__in=ids["cart"]).aggregate(Sum("price"))['price__sum']
         serializer.save(customer=self.request.user,total_price = food_price)
 
 
@@ -318,3 +332,32 @@ class ManagerAcceptOrder(generics.UpdateAPIView):
         serializer.save(accept_datetime=timezone.now())
 
 
+from .payments import PaytmPaymentPage
+from . import Checksum
+def payment(request):
+    # provide your unique order id
+    # if you don't have your unique order id then
+    order_id = Checksum.__id_generator__()
+    bill_amount = "100"
+    cust_id = "payment_maker@email.com"
+    data_dict = {
+                'ORDER_ID':order_id,
+                'TXN_AMOUNT': bill_amount,
+                'CUST_ID': cust_id
+            }
+    return PaytmPaymentPage(data_dict)
+
+from django.http import HttpResponse
+from .payments import VerifyPaytmResponse,JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def response(request):
+    resp = VerifyPaytmResponse(request)
+    if resp['verified']:
+        # save success details to db
+        print(resp['paytm']['ORDERID'])  #SAVE THIS ORDER ID TO DB FOR TRANSACTION HISTORY
+        return JsonResponse(resp['paytm'])
+    else:
+        return HttpResponse("Verification Failed")
+    return HttpResponse(status=200)
+    

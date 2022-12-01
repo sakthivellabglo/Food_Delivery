@@ -44,11 +44,15 @@ class Food(models.Model):
     is_vegan = models.BooleanField(default=False, blank=False, null=False)
     def __str__(self):
         return  self.name
-
+class Cart(models.Model):
+    customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    food = models.ForeignKey(Food, on_delete=models.SET_NULL, null=True)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.FloatField()
 
 class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    foods = models.ManyToManyField(Food)
+    cart = models.ManyToManyField(Cart)
     total_price =models.PositiveIntegerField()
     is_accepted = models.BooleanField(default=False, blank=False, null=False)
     is_cancelled = models.BooleanField(default=False, blank=False, null=False)
