@@ -72,7 +72,6 @@ class IsCustomerOfOrder(permissions.BasePermission):
     """
     Check if the customer is the owner of order.
     """
-
     message = "You can't cancell this order because you are not it's owner."
 
     def has_permission(self, request, view):

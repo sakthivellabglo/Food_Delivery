@@ -50,6 +50,7 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     price = models.FloatField()
 
+
 class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     cart = models.ManyToManyField(Cart)

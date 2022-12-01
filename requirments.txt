@@ -15,6 +15,7 @@ idna==3.4
 knox==0.1.14
 loguru==0.6.0
 mysql==0.0.3
+
 mysqlclient==2.1.1
 Pillow==9.3.0
 pycparser==2.21

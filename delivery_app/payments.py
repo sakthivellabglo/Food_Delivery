@@ -15,6 +15,7 @@ PAYTM_CHANNEL_ID = settings.PAYTM_CHANNEL_ID
 PAYTM_EMAIL = settings.PAYTM_EMAIL
 PAYTM_MOBILE = settings.PAYTM_MOBILE
 
+
 def GeneratePaymentPage(param_dict):
     HTML = """<html>
     <h1>%s<br><br> Merchant Check Out Page<br><br> 

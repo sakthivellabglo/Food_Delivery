@@ -60,7 +60,6 @@ class UserSerializer(serializers.ModelSerializer):
         profile.is_manager = profile_data.get("is_manager", profile.is_manager)
 
         instance.save()
-
         profile.save()
 
         return instance
