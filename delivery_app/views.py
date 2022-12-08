@@ -12,8 +12,9 @@ from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 
 
-from .models import Cart, Restaurant, Food, Order
+from .models import Cart, Profile, Restaurant, Food, Order
 from .serializers import (
+    AdminApproveSerializer,
     CartSerializer,
     UserSerializer,
     LoginSerializer,
@@ -340,4 +341,15 @@ class ManagerAcceptOrder(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         serializer.save(accept_datetime=timezone.now())
+
+class AdminApproveManager(generics.UpdateAPIView):
+    """
+    Accept  Manager if has permission to.
+    """
+
+    serializer_class = AdminApproveSerializer
+    permission_classes = (
+        IsAdminUser,
+    )
+    queryset = Profile.objects.all()
 

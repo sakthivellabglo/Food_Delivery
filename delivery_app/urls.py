@@ -22,21 +22,22 @@ urlpatterns = [
 
 
     # General API URI
-    path("register/", views.Register.as_view()),
-    path("login/", views.api_login.as_view()),
+    path("register/", views.Register.as_view(),name="register"),
+    path("login/", views.api_login.as_view(),name="login"),
 
     # Managers API URI
-    path("manager/activeorders/", views.ManagerActiveOrderList.as_view()),
-    path("manager/cancelledorders/",views.ManagerCancelledOrderList.as_view(),),
-    path("manager/deliveredorders/",views.ManagerDeliveredOrderList.as_view(),),
-    path("manager/cancell/<int:pk>/", views.ManagerCancellOrder.as_view()),
-    path("manager/accept/<int:pk>/", views.ManagerAcceptOrder.as_view()),
+    path("manager/activeorders/", views.ManagerActiveOrderList.as_view(),name="mamactive"),
+    path("manager/cancelledorders/",views.ManagerCancelledOrderList.as_view(),name="cancelledorders"),
+    path("manager/deliveredorders/",views.ManagerDeliveredOrderList.as_view(),name="deliveredorders"),
+    path("manager/cancell/<int:pk>/", views.ManagerCancellOrder.as_view(),name="cancell"),
+    path("manager/accept/<int:pk>/", views.ManagerAcceptOrder.as_view(),name="accept"),
+    path("Admin/Approve/<int:pk>/", views.AdminApproveManager.as_view(),name="accept"),
 
 
     # Customers API URI
-    path("customer/activeorders/", views.CustomerActiveOrderList.as_view()),
-    path("customer/cancelledorders/",views.CustomerCancelledOrderList.as_view(),),
-    path("customer/deliveredorders/",views.CustomerDeliveredOrderList.as_view(),),
-    path("customer/cancell/<int:pk>/", views.CustomerCancellOrder.as_view()),
-    path("customer/approvedelivered/<int:pk>/",views.CustomerAprroveDeliveredOrder.as_view(),),
+    path("customer/activeorders/", views.CustomerActiveOrderList.as_view(), name="activeorders"),
+    path("customer/cancelledorders/",views.CustomerCancelledOrderList.as_view(),name="cancelledorders"),
+    path("customer/deliveredorders/",views.CustomerDeliveredOrderList.as_view(),name="deliveredorders"),
+    path("customer/cancell/<int:pk>/", views.CustomerCancellOrder.as_view(),name="CustomerCancellOrder"),
+    path("customer/approvedelivered/<int:pk>/",views.CustomerAprroveDeliveredOrder.as_view(),name="CustomerAprroveDeliveredOrder"),
 ]

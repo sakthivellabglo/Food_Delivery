@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-s@xg3&zk2t02jz&0&lneb*f6^3%$-&rxty03%csvdwifd$bur#'
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -70,7 +70,7 @@ ROOT_URLCONF = 'delivery.urls'
     "http://127.0.0.1:8000"
 
 )"""
-
+DEBUG = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -146,7 +146,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    )
+    ),
+    'DEFAULT_PERMISSION_CLASSES': ( 'rest_framework.permissions.IsAdminUser', ),
 }
 
 STATIC_URL = '/images/'
@@ -157,3 +158,4 @@ os.path.join(BASE_DIR, "images"),
 STATIC_DIR = os.path.join(BASE_DIR, 'images')
 
 
+ALLOWED_HOSTS = ['*']

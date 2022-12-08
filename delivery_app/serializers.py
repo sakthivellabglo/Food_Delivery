@@ -57,7 +57,6 @@ class UserSerializer(serializers.ModelSerializer):
         profile.phone_number = profile_data.get("phone_number", profile.phone_number)
         profile.city = profile_data.get("city", profile.city)
         profile.is_manager = profile_data.get("is_manager", profile.is_manager)
-
         instance.save()
         profile.save()
 
@@ -143,3 +142,8 @@ class AcceptOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ("is_accepted",)
+
+class AdminApproveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ("is_approved",)
