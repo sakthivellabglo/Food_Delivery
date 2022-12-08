@@ -16,6 +16,7 @@ from .models import Cart, Profile, Restaurant, Food, Order
 from .serializers import (
     AdminApproveSerializer,
     CartSerializer,
+    ManagerSerializer,
     UserSerializer,
     LoginSerializer,
     RestaurantSerializer,
@@ -62,6 +63,12 @@ class Register(generics.CreateAPIView):
     Register a new account.
     """
     serializer_class = UserSerializer
+
+class MangerRegister(generics.CreateAPIView):
+    """
+    Register a new account.
+    """
+    serializer_class = ManagerSerializer
 
 
 class UserList(viewsets.ModelViewSet):

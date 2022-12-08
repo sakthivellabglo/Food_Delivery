@@ -15,15 +15,69 @@ class LoginSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ("birth_date", "gender", "phone_number", "city", "is_manager")
+        fields = ("id","birth_date", "gender", "phone_number", "address","city", "is_manager","is_approved")
+        extra_kwargs = {
+            "is_approved": {"read_only": True},
+            "id": {"read_only": True},
+            "is_manager": {"read_only": True},
+            "birth_date": {"read_only": True}}
 
+class MangerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ("birth_date", "gender", "phone_number", "city", "address","is_manager","is_approved")
+        extra_kwargs = {
+            "is_approved": {"read_only": True},}
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
 
     class Meta:
         model = User
-        fields = (
+        fields = ( 
+            "id",
+            "username",
+            "password",
+            "first_name",
+            "last_name",
+            "profile",
+        )
+        extra_kwargs = {"id": {"read_only": True},}
+
+    def create(self, validated_data):
+        profile_data = validated_data.pop("profile")
+        user = User.objects.create(
+            username=validated_data["username"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+        )
+        user.set_password(validated_data["password"])
+        user.save()
+        Profile.objects.create(user=user, **profile_data)
+        return user
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop("profile")
+        profile = instance.profile
+        instance.username = validated_data.get("username", instance.username)
+        instance.first_name = validated_data.get("first_name", instance.first_name)
+        instance.last_name = validated_data.get("last_name", instance.last_name)
+        instance.set_password(validated_data.get("password"))
+        profile.gender = profile_data.get("gender", profile.gender)
+        profile.phone_number = profile_data.get("phone_number", profile.phone_number)
+        profile.address = profile_data.get("address", profile.address)
+        profile.city = profile_data.get("city", profile.city)
+        instance.save()
+        profile.save()
+
+        return instance
+
+class ManagerSerializer(serializers.ModelSerializer):
+    profile = MangerProfileSerializer()
+
+    class Meta:
+        model = User
+        fields = ( 
             "id",
             "username",
             "password",
@@ -61,7 +115,6 @@ class UserSerializer(serializers.ModelSerializer):
         profile.save()
 
         return instance
-
 
 class RestaurantSerializer(serializers.ModelSerializer):
     class Meta:

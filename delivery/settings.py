@@ -159,3 +159,8 @@ STATIC_DIR = os.path.join(BASE_DIR, 'images')
 
 
 ALLOWED_HOSTS = ['*']
+
+# http://192.168.1.77:7000
+# ##python3 manage.py runserver 0.0.0.0:7000 http://192.168.1.77:7000/
+
+#192.168.1.77:7000
