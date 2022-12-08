@@ -102,10 +102,10 @@ class CreateRestaurant(viewsets.ModelViewSet):
     """
     queryset = Restaurant.objects.all()
     serializer_class = CreateRestaurantSerializer
-    permission_classes = (
+    permission_classes = [
         IsAuthenticated,
         ManagerPermission,
-    )
+    ]
     http_method_names = [ 'post']
     def perform_create(self, serializer):
         serializer.save(manager=self.request.user)
@@ -118,10 +118,10 @@ class ManagerFoodCreate(viewsets.ModelViewSet):
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
     permission_classes = (
-        IsAuthenticated,
-        ManagerPermission,
-        HasRestaurant,
-    )
+       IsAuthenticated,
+          ManagerPermission,
+          HasRestaurant,
+        )
     http_method_names = ['get', 'post','put']
 
     def get_queryset(self):
@@ -140,12 +140,21 @@ class CreateCart(viewsets.ModelViewSet):
     serializer_class = CartSerializer
     permission_classes = (IsAuthenticated,)
     queryset = Cart.objects.all()
-    http_method_names = ["post"]
     def perform_create(self, serializer):
         food_price = Food.objects.filter(id=self.request.data["food"]).aggregate(
             total=Sum(F('price')))['total']*int(self.request.data["quantity"])
         serializer.save(customer=self.request.user,price = food_price)
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        queryset = queryset.filter(customer=request.user) 
+        page = self.paginate_queryset(queryset)
 
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class CreateOrder(viewsets.ModelViewSet):
@@ -174,7 +183,7 @@ class CustomerActiveOrderList(generics.ListAPIView):
 
     def get_queryset(self):
         return Order.objects.filter(
-            customer=self.request.user.id, is_cancelled=False, is_delivered=False
+            customer=self.request.user.id, is_delivered=False
         )
 
 
@@ -250,9 +259,9 @@ class ManagerActiveOrderList(generics.ListAPIView):
 
     def get_queryset(self):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
-        foods = Food.objects.filter(restaurant=restaurant.id).values_list("id").first()
+        cart = Cart.objects.filter(food__restaurant=restaurant).values_list("id")
         orders = Order.objects.filter(
-            foods__in=foods, is_cancelled=False, is_delivered=False
+            cart__in=cart, is_delivered=False
         )
         return orders
 
@@ -271,9 +280,9 @@ class ManagerCancelledOrderList(generics.ListAPIView):
 
     def get_queryset(self):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
-        foods = Food.objects.filter(restaurant=restaurant.id).values_list("id").first()
+        foods = Cart.objects.filter(food__restaurant=restaurant.id).values_list("id").first()
         orders = Order.objects.filter(
-            foods__in=foods, is_cancelled=True
+            cart__in=foods, is_cancelled=False
         )
         return orders
 
@@ -292,9 +301,9 @@ class ManagerDeliveredOrderList(generics.ListAPIView):
 
     def get_queryset(self):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
-        foods = Food.objects.filter(restaurant=restaurant.id).values_list("id").first()
+        foods = Cart.objects.filter(food__restaurant=restaurant.id).values_list("id").first()
         orders = Order.objects.filter(
-            foods__in=foods, is_delivered=True
+            cart__in=foods, is_delivered=True
         )
         return orders
 
@@ -332,33 +341,3 @@ class ManagerAcceptOrder(generics.UpdateAPIView):
     def perform_update(self, serializer):
         serializer.save(accept_datetime=timezone.now())
 
-
-from .payments import PaytmPaymentPage
-from . import Checksum
-def payment(request):
-    # provide your unique order id
-    # if you don't have your unique order id then
-    order_id = Checksum.__id_generator__()
-    bill_amount = "100"
-    cust_id = "payment_maker@email.com"
-    data_dict = {
-                'ORDER_ID':order_id,
-                'TXN_AMOUNT': bill_amount,
-                'CUST_ID': cust_id
-            }
-    return PaytmPaymentPage(data_dict)
-
-from django.http import HttpResponse
-from .payments import VerifyPaytmResponse,JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-@csrf_exempt
-def response(request):
-    resp = VerifyPaytmResponse(request)
-    if resp['verified']:
-        # save success details to db
-        print(resp['paytm']['ORDERID'])  #SAVE THIS ORDER ID TO DB FOR TRANSACTION HISTORY
-        return JsonResponse(resp['paytm'])
-    else:
-        return HttpResponse("Verification Failed")
-    return HttpResponse(status=200)
-    

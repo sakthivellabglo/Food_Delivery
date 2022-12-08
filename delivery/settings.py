@@ -26,12 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-import environ
-# Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
-
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = 'django-insecure-s@xg3&zk2t02jz&0&lneb*f6^3%$-&rxty03%csvdwifd$bur#'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
@@ -47,6 +42,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS =[
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 LOCAL_APPS = ['delivery_app',]
@@ -62,9 +58,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = False
+
 ROOT_URLCONF = 'delivery.urls'
+
+"""CORS_ORIGIN_WHITELIST = (
+    "http://127.0.0.1:8000"
+
+)"""
 
 TEMPLATES = [
     {
@@ -151,25 +156,4 @@ os.path.join(BASE_DIR, "images"),
 ]
 STATIC_DIR = os.path.join(BASE_DIR, 'images')
 
-PAYTM_MERCHANT_COMPANY_NAME = "delivery app"
-PAYTM_CHANNEL_ID = "WEB"
-PAYTM_EMAIL  = "<YOUR-EMAIL-ID>"
-PAYTM_MOBILE = "<YOUR-MOBILE-NUMBER>"
-PAYTM_STAGING = True
 
-if PAYTM_STAGING:
-    PAYTM_MERCHANT_KEY = "<YOUR-STAGING-MERCHANT-KEY>"
-    PAYTM_INDUSTRY_TYPE_ID = "Retail"
-    PAYTM_MERCHANT_ID = "<YOUR-MERCHANT-ID>"
-    PAYTM_CALLBACK_URL = "http://localhost:8000/" if DEBUG else "http://localhost:8000/"
-    PAYTM_WEBSITE = "WEB_STAGING"
-    PAYTM_TRANSACTION_STATUS_URL = "https://pguat.paytm.com/oltp/HANDLER_INTERNAL/TXNSTATUS"
-    PAYTM_PAYMENT_GATEWAY_URL = "https://pguat.paytm.com/oltp-web/processTransaction"
-else:
-    PAYTM_MERCHANT_KEY = "<YOUR-LIVE-MERCHANT-KEY>"
-    PAYTM_MERCHANT_ID = "<YOUR-LIVE-MERCHANT-ID>"
-    PAYTM_CALLBACK_URL = "<YOUR-LIVE-CALLBACK-URL>"
-    PAYTM_INDUSTRY_TYPE_ID = "Retail92"
-    PAYTM_WEBSITE = "<PAYTM-WEBSITE-ID>"
-    PAYTM_TRANSACTION_STATUS_URL = "https://secure.paytm.in/oltp/HANDLER_INTERNAL/TXNSTATUS"
-    PAYTM_PAYMENT_GATEWAY_URL = "https://secure.paytm.in/oltp-web/processTransaction"

@@ -15,7 +15,7 @@ class LoginSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ("birth_date","image", "gender", "phone_number", "city", "is_manager")
+        fields = ("birth_date", "gender", "phone_number", "city", "is_manager")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -52,7 +52,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.first_name = validated_data.get("first_name", instance.first_name)
         instance.last_name = validated_data.get("last_name", instance.last_name)
         instance.set_password(validated_data.get("password"))
-        instance.set_password(validated_data.get("image"))
         profile.birth_date = profile_data.get("birth_date", profile.birth_date)
         profile.gender = profile_data.get("gender", profile.gender)
         profile.phone_number = profile_data.get("phone_number", profile.phone_number)
@@ -85,10 +84,14 @@ class FoodSerializer(serializers.ModelSerializer):
         extra_kwargs = {"restaurant": {"read_only": True}}
 
 class CartSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='food.name',read_only=True)
+    resname = serializers.CharField(source='food.restaurant',read_only=True)
     class Meta:
         model = Cart
-        fields = "__all__"
-        extra_kwargs = {"customer": {"read_only": True}}
+        fields = ["id","food","quantity","name","resname"]
+        extra_kwargs = {"customer": {"read_only": True},
+                        "price": {"read_only": True},}
+        
 
 
 class PlaceOrderSerializer(serializers.ModelSerializer):

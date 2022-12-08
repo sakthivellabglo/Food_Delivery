@@ -8,7 +8,6 @@ GENDER_CHOICES = (
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image =models.ImageField(upload_to="images")
     birth_date = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     phone_number = models.CharField( max_length=10, blank=True)
@@ -44,15 +43,20 @@ class Food(models.Model):
     is_vegan = models.BooleanField(default=False, blank=False, null=False)
     def __str__(self):
         return  self.name
+
+        
 class Cart(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     food = models.ForeignKey(Food, on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(default=1)
     price = models.FloatField()
+    def __str__(self):
+        return "{} {}".format(self.food,self.food.restaurant)
+
 
 class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    cart = models.ManyToManyField(Cart)
+    cart = models.ManyToManyField(Cart , blank=False)
     total_price =models.PositiveIntegerField()
     is_accepted = models.BooleanField(default=False, blank=False, null=False)
     is_cancelled = models.BooleanField(default=False, blank=False, null=False)

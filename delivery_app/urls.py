@@ -39,6 +39,4 @@ urlpatterns = [
     path("customer/deliveredorders/",views.CustomerDeliveredOrderList.as_view(),),
     path("customer/cancell/<int:pk>/", views.CustomerCancellOrder.as_view()),
     path("customer/approvedelivered/<int:pk>/",views.CustomerAprroveDeliveredOrder.as_view(),),
-    path('payment/', views.payment, name='payment'),
-    path('response/', views.response, name='response'),
 ]
