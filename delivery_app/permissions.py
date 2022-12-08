@@ -21,7 +21,7 @@ class ManagerPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_staff:
             return True
-        return request.user.profile.is_manager and Profile.object.get(is_manager = 'True',is_approved = 'A')
+        return request.user.profile.is_manager and bool(Profile.objects.get(is_manager = 'True',is_approved = 'A'))
 
 
 class HasRestaurant(permissions.BasePermission):
@@ -32,7 +32,7 @@ class HasRestaurant(permissions.BasePermission):
     message = "You should create a restaurant first to be able to access it's foods"
 
     def has_permission(self, request, view):
-        return bool(Restaurant.objects.get(manager=request.user.id ,is_approved = 'A'))
+        return bool(Restaurant.objects.get(manager=request.user.id ))
 
 
 class IsFoodOwner(permissions.BasePermission):

@@ -16,9 +16,10 @@ APPROVAL_CHOICES = (
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birth_date = models.DateField(blank=True, null=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES,null =True)
     phone_number = models.CharField( max_length=10, blank=True)
     city = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
     is_manager = models.BooleanField(default=False)
     is_approved = models.CharField(max_length=100,choices=APPROVAL_CHOICES,default="P")
     def __str__(self):
