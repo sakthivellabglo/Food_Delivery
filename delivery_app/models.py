@@ -54,8 +54,8 @@ class Food(models.Model):
 
         
 class Cart(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    food = models.ForeignKey(Food, on_delete=models.SET_NULL, null=True)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE,)
+    food = models.ForeignKey(Food, on_delete=models.CASCADE,)
     quantity = models.PositiveIntegerField(default=1)
     price = models.FloatField()
     def __str__(self):

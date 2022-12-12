@@ -21,7 +21,7 @@ class ManagerPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_staff:
             return True
-        return request.user.profile.is_manager and bool(Profile.objects.get(is_manager = 'True',is_approved = 'A'))
+        return request.user.profile.is_manager and bool(Profile.objects.filter(is_manager = 'True',is_approved = 'A'))
 
 
 class HasRestaurant(permissions.BasePermission):

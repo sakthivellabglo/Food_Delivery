@@ -140,7 +140,7 @@ class CartSerializer(serializers.ModelSerializer):
     resname = serializers.CharField(source='food.restaurant',read_only=True)
     class Meta:
         model = Cart
-        fields = ["id","food","quantity","name","resname"]
+        fields = ["id","food","quantity","name","resname","price"]
         extra_kwargs = {"customer": {"read_only": True},
                         "price": {"read_only": True},}
         

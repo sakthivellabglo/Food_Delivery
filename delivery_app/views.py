@@ -52,7 +52,6 @@ class api_login(generics.CreateAPIView):
         password = request.data["password"]
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
             token, li = Token.objects.get_or_create(user=user)
             return Response({'token': token.key},status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -130,8 +129,6 @@ class ManagerFoodCreate(viewsets.ModelViewSet):
           ManagerPermission,
           HasRestaurant,
         )
-    http_method_names = ['get', 'post','put']
-
     def get_queryset(self):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
         return Food.objects.filter(restaurant=restaurant)
@@ -288,7 +285,7 @@ class ManagerCancelledOrderList(generics.ListAPIView):
 
     def get_queryset(self):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
-        foods = Cart.objects.filter(food__restaurant=restaurant.id).values_list("id").first()
+        foods = Cart.objects.filter(food__restaurant=restaurant.id).values_list("id")
         orders = Order.objects.filter(
             cart__in=foods, is_cancelled=False
         )
@@ -309,7 +306,8 @@ class ManagerDeliveredOrderList(generics.ListAPIView):
 
     def get_queryset(self):
         restaurant = Restaurant.objects.filter(manager=self.request.user.id).first()
-        foods = Cart.objects.filter(food__restaurant=restaurant.id).values_list("id").first()
+        foods = Cart.objects.filter(food__restaurant=restaurant.id).values_list("id")
+        print(foods)
         orders = Order.objects.filter(
             cart__in=foods, is_delivered=True
         )
