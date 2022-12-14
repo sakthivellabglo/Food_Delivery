@@ -185,7 +185,7 @@ class CancellOrderSerializer(serializers.ModelSerializer):
         fields = ("is_cancelled",)
 
 
-class ApproveDeliveredOrderSerializer(serializers.ModelSerializer):
+class ApproveDeliveredOrderSerializer(serializers.ModelSerializer): 
     class Meta:
         model = Order
         fields = ("is_delivered",)

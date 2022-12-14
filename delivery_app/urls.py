@@ -14,6 +14,7 @@ router.register('food', views.FoodList,basename="foods-list")
 router.register('manager/newrestaurant', views.CreateRestaurant,)
 router.register('manager/foods', views.ManagerFoodCreate,basename="food-list",)
 router.register('customer/neworder', views.CreateOrder,)
+router.register('cartlist', views.CartList,basename="cartlist-list")
 urlpatterns = [
 
     # rest_framework Authentication
