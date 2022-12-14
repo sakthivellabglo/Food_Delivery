@@ -53,7 +53,9 @@ class api_login(generics.CreateAPIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             token, li = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key},status=status.HTTP_200_OK)
+            if user.profile.is_manager:
+                return Response({'token': token.key,'manger':"true"},status=status.HTTP_200_OK)
+            return Response({'token': token.key,'manger':"false"},status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -149,6 +151,8 @@ class CreateCart(viewsets.ModelViewSet):
         food_price = Food.objects.filter(id=self.request.data["food"]).aggregate(
             total=Sum(F('price')))['total']*int(self.request.data["quantity"])
         serializer.save(customer=self.request.user,price = food_price)
+
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         queryset = queryset.filter(customer=request.user) 
@@ -312,6 +316,16 @@ class ManagerDeliveredOrderList(generics.ListAPIView):
             cart__in=foods, is_delivered=True
         )
         return orders
+
+class CartList(viewsets.ModelViewSet):
+    """
+    Add to Cart.
+    """
+
+    serializer_class = CartSerializer
+    permission_classes = (IsAuthenticated,)
+    queryset = Cart.objects.all()
+    
 
 
 class ManagerCancellOrder(generics.UpdateAPIView):
