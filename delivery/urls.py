@@ -21,7 +21,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('delivery_app.urls'))
+    path('',include('delivery_app.urls')),
+    path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+      
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,

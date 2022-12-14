@@ -18,6 +18,8 @@ router.register('cartlist', views.CartList,basename="cartlist-list")
 urlpatterns = [
 
     # rest_framework Authentication
+    path('api/change-password/', views.ChangePasswordView.as_view(), name='change-password'),
+    path('accounts/', include('django.contrib.auth.urls')),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path('',include(router.urls)),
 

@@ -1,0 +1,11 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Password Reset for Some website title
+From: noreply@somehost.local
+To: nanthu@gmail.com
+Date: Wed, 14 Dec 2022 05:17:10 -0000
+Message-ID: <167099503017.13585.15639116025918303454@user-H110M-S2>
+
+/api/password_reset/?token=9dd55fbd392
+-------------------------------------------------------------------------------

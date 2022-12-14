@@ -42,7 +42,8 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS =[
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders'
+    'corsheaders',
+    'django_rest_passwordreset'
 ]
 
 LOCAL_APPS = ['delivery_app',]
@@ -129,6 +130,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
 
 # Internationalization
