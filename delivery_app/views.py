@@ -235,7 +235,7 @@ class CustomerActiveOrderList(generics.ListAPIView):
 
     def get_queryset(self):
         return Order.objects.filter(
-            customer=self.request.user.id, is_delivered=False
+            customer=self.request.user.id, is_delivered=False ,is_cancelled =False
         )
 
 
