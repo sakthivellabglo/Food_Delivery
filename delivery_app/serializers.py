@@ -22,12 +22,14 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='user',read_only=True)
     class Meta:
         model = Profile
-        fields = ("id","birth_date", "gender", "phone_number", "address","city", "is_manager","is_approved")
+        fields = ("id","user","name","birth_date", "gender", "phone_number", "address","city", "is_manager","is_approved")
         extra_kwargs = {
             "is_approved": {"read_only": True},
             "id": {"read_only": True},
+            "user": {"read_only": True},
             "is_manager": {"read_only": True},
             "birth_date": {"read_only": True}}
 
@@ -49,6 +51,7 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "first_name",
             "last_name",
+            "email",
             "profile",
         )
         extra_kwargs = {"id": {"read_only": True},}
@@ -59,6 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
             username=validated_data["username"],
             first_name=validated_data["first_name"],
             last_name=validated_data["last_name"],
+            email=validated_data["email"],
         )
         user.set_password(validated_data["password"])
         user.save()
@@ -71,6 +75,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.username = validated_data.get("username", instance.username)
         instance.first_name = validated_data.get("first_name", instance.first_name)
         instance.last_name = validated_data.get("last_name", instance.last_name)
+        instance.email = validated_data.get("email", instance.email)
         instance.set_password(validated_data.get("password"))
         profile.gender = profile_data.get("gender", profile.gender)
         profile.phone_number = profile_data.get("phone_number", profile.phone_number)

@@ -55,8 +55,8 @@ class api_login(generics.CreateAPIView):
         if user is not None:
             token, li = Token.objects.get_or_create(user=user)
             if user.profile.is_manager:
-                return Response({'token': token.key,'manger':"true"},status=status.HTTP_200_OK)
-            return Response({'token': token.key,'manger':"false"},status=status.HTTP_200_OK)
+                return Response({'token': token.key,'manager':"true","user":user.username},status=status.HTTP_200_OK)
+            return Response({'token': token.key,'manager':"false","user":user.username},status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -186,11 +186,19 @@ class CreateCart(viewsets.ModelViewSet):
         food_price = Food.objects.filter(id=self.request.data["food"]).aggregate(
             total=Sum(F('price')))['total']*int(self.request.data["quantity"])
         serializer.save(customer=self.request.user,price = food_price)
-
+        
+    def update(self, request, *args, **kwargs):
+        super().update(request, *args, **kwargs)
+        instance = self.get_object()
+        f_price = Food.objects.get(id = instance.food.id).price
+        price=int(f_price) * int(instance.quantity)
+        instance.price =price
+        instance.save()
+        return Response(CartSerializer(instance).data)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        queryset = queryset.filter(customer=request.user) 
+        queryset = queryset.filter(customer=request.user)
         page = self.paginate_queryset(queryset)
 
         if page is not None:
@@ -227,7 +235,7 @@ class CustomerActiveOrderList(generics.ListAPIView):
 
     def get_queryset(self):
         return Order.objects.filter(
-            customer=self.request.user.id, is_delivered=False
+            customer=self.request.user.id, is_delivered=False ,is_cancelled =False
         )
 
 
