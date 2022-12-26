@@ -27,7 +27,7 @@ urlpatterns = [
     # General API URI
     path("register/", views.Register.as_view(),name="register"),
      path("manager/register/", views.MangerRegister.as_view(),name="MangerRegister"),
-    path("login/", views.api_login.as_view(),name="login"),
+    path("login/", views.LoginAPIView.as_view(),name="login"),
 
     # Managers API URI
     path("manager/activeorders/", views.ManagerActiveOrderList.as_view(),name="mamactive"),

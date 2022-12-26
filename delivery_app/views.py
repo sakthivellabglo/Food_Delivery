@@ -11,6 +11,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 
+from delivery_app.utils import get_tokens_for_user
+
 
 from .models import Cart, Profile, Restaurant, Food, Order
 from .serializers import (
@@ -41,23 +43,20 @@ from .permissions import (
 )
 
 
-class api_login(generics.CreateAPIView):
-    """
-    Login user with username and password.
-    """
-
+class LoginAPIView(generics.CreateAPIView):
     serializer_class = LoginSerializer
-
     def post(self, request):
-        username = request.data["username"]
-        password = request.data["password"]
+        a = request.data
+        if 'username' not in a or 'password' not in a:
+            return Response({'msg': 'Credentials missing'}, status=status.HTTP_400_BAD_REQUEST)
+        username = a['username']
+        password = a['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            token, li = Token.objects.get_or_create(user=user)
-            if user.profile.is_manager:
-                return Response({'token': token.key,'manager':"true","user":user.username},status=status.HTTP_200_OK)
-            return Response({'token': token.key,'manager':"false","user":user.username},status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            login(request, user)
+            auth_data = get_tokens_for_user(user)
+            return Response({**auth_data}, status=status.HTTP_200_OK)
+        return Response({'msg': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class Register(generics.CreateAPIView):
