@@ -22,14 +22,12 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='user',read_only=True)
     class Meta:
         model = Profile
-        fields = ("id","user","name","birth_date", "gender", "phone_number", "address","city", "is_manager","is_approved")
+        fields = ("id","birth_date", "gender", "phone_number", "address","city", "is_manager","is_approved")
         extra_kwargs = {
             "is_approved": {"read_only": True},
             "id": {"read_only": True},
-            "user": {"read_only": True},
             "is_manager": {"read_only": True},
             "birth_date": {"read_only": True}}
 

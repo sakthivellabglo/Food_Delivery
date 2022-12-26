@@ -74,6 +74,8 @@ class Order(models.Model):
     cancell_datetime = models.DateTimeField(default=None, null=True, blank=True)
     delivered_datetime = models.DateTimeField(default=None, null=True, blank=True)
     note = models.CharField(max_length=1024, default="")
+
+    
 from django.dispatch import receiver
 from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created

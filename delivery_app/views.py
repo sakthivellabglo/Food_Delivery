@@ -237,6 +237,7 @@ class CustomerActiveOrderList(generics.ListAPIView):
         return Order.objects.filter(
             customer=self.request.user.id, is_delivered=False ,is_cancelled =False
         )
+        
 
 
 class CustomerCancelledOrderList(generics.ListAPIView):
