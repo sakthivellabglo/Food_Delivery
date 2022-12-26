@@ -139,6 +139,7 @@ class FoodList(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = FoodSerializer
     queryset = Food.objects.all()
+    permission_classes = (IsAuthenticated,)
 
 class CreateRestaurant(viewsets.ModelViewSet):
     """
